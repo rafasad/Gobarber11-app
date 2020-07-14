@@ -10,19 +10,18 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
-import * as Yup from 'yup';
-
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationsErrors';
 
+import logo from '../../assets/logo.png';
+
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-
-import logoImg from '../../assets/logo.png';
 
 import {
   Container,
@@ -44,15 +43,16 @@ const SignIn: React.FC = () => {
 
   const navigation = useNavigation();
 
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
 
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
       try {
         formRef.current?.setErrors({});
+
         const schema = Yup.object().shape({
           email: Yup.string()
-            .email('Digite um E-mail válido')
+            .email('Digite um e-mail válido')
             .required('E-mail obrigatório'),
           password: Yup.string().required('Senha obrigatória'),
         });
@@ -68,6 +68,7 @@ const SignIn: React.FC = () => {
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
+
           formRef.current?.setErrors(errors);
 
           return;
@@ -75,7 +76,7 @@ const SignIn: React.FC = () => {
 
         Alert.alert(
           'Erro na autenticação',
-          'Ocorreu um erro ao fazer logon, cheque as credenciais.',
+          'Ocorreu um erro ao fazer login, cheque as credenciais',
         );
       }
     },
@@ -85,22 +86,22 @@ const SignIn: React.FC = () => {
   return (
     <>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         enabled
       >
         <ScrollView
-          contentContainerStyle={{ flex: 1 }}
           keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flex: 1 }}
         >
           <Container>
-            <Image source={logoImg} />
+            <Image source={logo} />
 
             <View>
               <Title>Faça seu logon</Title>
             </View>
 
-            <Form ref={formRef} onSubmit={handleSignIn} style={{ flex: 1 }}>
+            <Form ref={formRef} onSubmit={handleSignIn}>
               <Input
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -115,10 +116,10 @@ const SignIn: React.FC = () => {
               />
               <Input
                 ref={passwordInputRef}
+                secureTextEntry
                 name="password"
                 icon="lock"
                 placeholder="Senha"
-                secureTextEntry
                 returnKeyType="send"
                 onSubmitEditing={() => {
                   formRef.current?.submitForm();
@@ -134,7 +135,7 @@ const SignIn: React.FC = () => {
               </Button>
             </Form>
 
-            <ForgotPassword onPress={() => {}}>
+            <ForgotPassword>
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
             </ForgotPassword>
           </Container>
